@@ -1,0 +1,34 @@
+dist: xenial
+
+jobs:
+  include:
+    - stage: build
+      name: "build image"
+      if: (tag IS blank)
+      sudo: required
+      services:
+        - docker
+      script:
+      - docker build -t hackerh/backmeup:latest .
+
+    - stage: build
+      name: "push latest image"
+      if: (branch = master AND NOT type = pull_request)
+      sudo: required
+      services:
+        - docker
+      script:
+      - docker build -t hackerh/backmeup:latest .
+      - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+      - docker push hackerh/backmeup:latest
+
+    - stage: build
+      name: "push tagged image"
+      if: (tag IS present)
+      sudo: required
+      services:
+        - docker
+      script:
+      - docker build -t hackerh/backmeup:"${TRAVIS_TAG}" .
+      - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+      - docker push hackerh/backmeup:"${TRAVIS_TAG}"

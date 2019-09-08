@@ -1,0 +1,7 @@
+credentials.json
+settings.yaml
+*.asc
+*.sec
+.vscode
+token.pickle
+__pycache__
